@@ -1,0 +1,5 @@
+ov7670_config.c:11:6:init_rgb565_qvga_25fps_new	8	static
+ov7670_config.c:129:6:init_rgb565_qvga_25fps	8	static
+ov7670_config.c:247:6:init_rgb565_qvga_12fps	8	static
+ov7670_config.c:301:6:init_yuv_12fps	8	static
+ov7670_config.c:431:6:init_yuv_25fps	8	static

@@ -1,0 +1,8 @@
+SCCB.c:6:6:SCCB_GPIO_Config	32	static
+SCCB.c:18:6:SCCB_SID_GPIO_OUTPUT	32	static
+SCCB.c:27:6:SCCB_SID_GPIO_INPUT	32	static
+SCCB.c:35:6:startSCCB	8	static
+SCCB.c:48:6:stopSCCB	8	static
+SCCB.c:59:6:noAck	8	static
+SCCB.c:73:15:SCCBwriteByte	16	static
+SCCB.c:105:15:SCCBreadByte	16	static

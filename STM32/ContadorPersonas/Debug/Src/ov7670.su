@@ -1,0 +1,6 @@
+ov7670.c:7:15:wrOV7670Reg	16	static
+ov7670.c:28:15:rdOV7670Reg	16	static
+ov7670.c:58:6:OV7670_config_window	32	static
+ov7670.c:91:6:set_OV7670reg	8	static
+ov7670.c:260:15:OV7670_init	8	static
+ov7670.c:425:6:OV7670_config	16	static
