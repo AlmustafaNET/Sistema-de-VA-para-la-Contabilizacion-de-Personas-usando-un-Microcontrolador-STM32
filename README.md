@@ -27,3 +27,5 @@ El siguiente código pertenece al Trabajo de Fin de Máster (TFM), realizado par
 > Archivo de configuración STM32CubeMX v5.0:  ContadorPersonas.ioc
 
 > IDE de Programación: Atollic TrueSTUDIO® for STM32 9.3
+
+- **InterfazCamara**: Proyecto entero realizado en KiCAD para la elaboración de la tarjeta electrónica que sirve como interfaz entre la cámara *OV7670* y el *STM32 NUCLEO-F767ZI*. Este pryecto, incluye el esquemático, PCB y los archivos GERBER.
