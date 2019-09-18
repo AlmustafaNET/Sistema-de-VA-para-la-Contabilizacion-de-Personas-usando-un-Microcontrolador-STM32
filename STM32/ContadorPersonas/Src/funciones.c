@@ -159,6 +159,7 @@ void bound_rectangulo(uint8_t *img, uint8_t valor, uint16_t* rect){
     }
 }
 
+
 void filtrar_x_area(uint8_t *img, int min_area, uint16_t* rectangulos)
 {
     //Imagen temporal

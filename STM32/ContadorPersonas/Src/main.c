@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+#include "main.h"
 #include "lwip.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -29,7 +30,6 @@
 #include <string.h>
 #include "dwt_delay.h"
 #include "ov7670.h"
-#include "ov7670_config.h"
 #include "funciones.h"
 #include "global.h"
 //#include "OV7670_control.h"
@@ -43,9 +43,11 @@
 
 #define COLOR	0
 
+/*
 struct tcp_pcb* conn;
 struct tcp_pcb* socket;
 extern struct netif gnetif;
+*/
 
 uint16_t rowEnv = 0;
 uint8_t flagEnviando = 0;
@@ -61,7 +63,11 @@ uint8_t dig7seg[] =
 
 // Image buffer
 uint16_t frame_buffer[IMG_ROWS * IMG_COLUMNS];
-uint8_t gray_frame[IMG_ROWS * IMG_COLUMNS];
+uint8_t img1[IMG_ROWS * IMG_COLUMNS];
+uint8_t img2[IMG_ROWS * IMG_COLUMNS];
+uint8_t img3[IMG_ROWS * IMG_COLUMNS];
+
+uint8_t flagFrame = 0;
 
 /* USER CODE END PTD */
 
@@ -117,6 +123,7 @@ void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *obj) {
 		return;
 
 	HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+	flagFrame = 1;
 }
 
 // Barrido de Displays
@@ -182,6 +189,7 @@ int getTiempoMS() {
 	tiempo = HAL_GetTick();
 	return res;
 }
+/*
 
 err_t tcp_echoserver_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
 		err_t err) {
@@ -220,10 +228,6 @@ err_t tcp_echoserver_sent(void *arg, struct tcp_pcb *tpcb, u16_t len) {
 
 	// Se termino de enviar <FIN>
 	if (len == 5) {
-		numero++;
-		if (numero > 99)
-			numero = 0;
-
 		flagEnviando = 0;
 
 		return ERR_ALREADY;
@@ -242,7 +246,7 @@ err_t tcp_echoserver_sent(void *arg, struct tcp_pcb *tpcb, u16_t len) {
 #else
 	if (len > 10 && len < (IMG_COLUMNS / 4)) {
 #endif
-		printf("Primero\r\n");
+		//printf("Primero\r\n");
 		rowEnv = 0;
 	}
 
@@ -253,7 +257,7 @@ err_t tcp_echoserver_sent(void *arg, struct tcp_pcb *tpcb, u16_t len) {
 
 	tcp_write(socket, ptr, IMG_COLUMNS * 2, 0);
 #else
-	uint8_t* ptr = (uint8_t *) gray_frame;
+	uint8_t* ptr = (uint8_t *) img3;
 	ptr += rowEnv * IMG_COLUMNS;
 
 	tcp_write(socket, ptr, IMG_COLUMNS, 0);
@@ -264,9 +268,11 @@ err_t tcp_echoserver_sent(void *arg, struct tcp_pcb *tpcb, u16_t len) {
 
 }
 
+
 void tcp_echoserver_error(void *arg, err_t err) {
 	printf("TCP_ERROR! %i\r\n", err);
 }
+*/
 
 /*
  err_t tcp_echoserver_poll(void *arg, struct tcp_pcb *tpcb){
@@ -275,6 +281,7 @@ void tcp_echoserver_error(void *arg, err_t err) {
  }
  */
 
+/*
 static err_t tcp_echoserver_accept(void *arg, struct tcp_pcb *newpcb, err_t err) {
 	printf("\nTCP_echoserver_accept\r\n");
 
@@ -285,21 +292,22 @@ static err_t tcp_echoserver_accept(void *arg, struct tcp_pcb *newpcb, err_t err)
 	}
 
 	socket = newpcb;
-	/* pass newly allocated es structure as argument to newpcb */
+	// pass newly allocated es structure as argument to newpcb
 	tcp_arg(newpcb, NULL);
 
-	/* initialize lwIP tcp_recv callback function for newpcb */
+	// initialize lwIP tcp_recv callback function for newpcb
 	tcp_recv(newpcb, tcp_echoserver_recv);
 
 	tcp_sent(newpcb, tcp_echoserver_sent);
 
-	/* initialize lwIP tcp_err callback function for newpcb */
+	// initialize lwIP tcp_err callback function for newpcb
 	tcp_err(newpcb, tcp_echoserver_error);
 
-	/* initialize lwIP tcp_poll callback function for newpcb */
+	// initialize lwIP tcp_poll callback function for newpcb
 	//tcp_poll(newpcb, tcp_echoserver_poll, 1);
 	return ERR_OK;
 }
+*/
 
 /* USER CODE END 0 */
 
@@ -337,7 +345,7 @@ int main(void)
   MX_USART3_UART_Init();
   MX_DCMI_Init();
   MX_I2C1_Init();
-  MX_LWIP_Init();
+  //MX_LWIP_Init();
   /* USER CODE BEGIN 2 */
 
 	// Probar
@@ -351,22 +359,24 @@ int main(void)
 	printf("\n\n\n\n\nEMPEZANDO!\r\n\n");
 
 	// DHCP
-	printf("Asignacion DHCP\r\n");
-	while (1) {
-		MX_LWIP_Process();
-		if (gnetif.ip_addr.addr != 0) {
-			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+	//printf("Asignacion DHCP\r\n");
 
-			uint32_t ip = gnetif.ip_addr.addr;
-
-			printf("IP Asignada: %i.%i.%i.%i\r\n", (uint8_t) ip,
-					(uint8_t) (ip >> 8), (uint8_t) (ip >> 16),
-					(uint8_t) (ip >> 24));
-
-			break;
-		}
-		HAL_Delay(10);
-	}
+	uint8_t primero = 1;
+//	while (1) {
+//		MX_LWIP_Process();
+//		if (gnetif.ip_addr.addr != 0) {
+//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+//
+//			uint32_t ip = gnetif.ip_addr.addr;
+//
+//			printf("IP Asignada: %i.%i.%i.%i\r\n", (uint8_t) ip,
+//					(uint8_t) (ip >> 8), (uint8_t) (ip >> 16),
+//					(uint8_t) (ip >> 24));
+//
+//			break;
+//		}
+//		HAL_Delay(10);
+//	}
 	//
 
 	DWT_Init(); // Delay de micro segundos
@@ -393,27 +403,27 @@ int main(void)
 			Im_size);
 
 	//Crear Conexion TCP Server
-	socket = NULL;
-	err_t tcp_err;
+	//socket = NULL;
+	//err_t tcp_err;
 
-	printf("Creando TCP_PCB\r\n");
-	conn = tcp_new();
+	//printf("Creando TCP_PCB\r\n");
+	//conn = tcp_new();
 
-	printf("TCP BIND\r\n");
-	tcp_err = tcp_bind(conn, IP_ADDR_ANY, 7777); // Puerto 7777
-
-	if (tcp_err == ERR_OK) {
-		printf("TCP ESCUCHANDO\r\n");
-		conn = tcp_listen(conn);
-
-		printf("TCP ACEPTANDO\r\n");
-		tcp_accept(conn, tcp_echoserver_accept);
-
-	} else {
-		printf("TCP No se pudo crear conexion\r\n");
-		memp_free(MEMP_TCP_PCB, conn);
-		conn = NULL;
-	}
+//	printf("TCP BIND\r\n");
+//	tcp_err = tcp_bind(conn, IP_ADDR_ANY, 7777); // Puerto 7777
+//
+//	if (tcp_err == ERR_OK) {
+//		printf("TCP ESCUCHANDO\r\n");
+//		conn = tcp_listen(conn);
+//
+//		printf("TCP ACEPTANDO\r\n");
+//		tcp_accept(conn, tcp_echoserver_accept);
+//
+//	} else {
+//		printf("TCP No se pudo crear conexion\r\n");
+//		memp_free(MEMP_TCP_PCB, conn);
+//		conn = NULL;
+//	}
 	///////////////////
 
   /* USER CODE END 2 */
@@ -421,40 +431,166 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
+    // Definición de Parametros
+    int linea1 = (int)((ANCHO / 2.0) * 1.2);
+    int linea2 = (int)((ANCHO / 2.0) * 0.8);
+    const int cteMovimiento = (int)(TOTAL * 0.01); // 1%
+    //const int cteTamBlob = (int)(TOTAL * 0.05); // 5%;
+
+    // Variables
+    uint16_t* rectangulos = (uint16_t*) malloc(4); //rectangulo con x1,y1,x2,y2
+    uint8_t estado = 0;
+	uint8_t estado_ant = 0;
+	uint8_t estados[20];
+	for(uint8_t i=0; i < 20; i++) estados[i]=0;
+	uint8_t ind_estado = 0;
+	uint8_t direccion = 0;
+
 	while (1) {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		MX_LWIP_Process();
+		//MX_LWIP_Process();
 
-		// Enviar por TCP la Imagen
-		if (flagTCP) {
-			flagTCP = 0;
-
-			// Suspende captura de la camara
-			flagEnviando = 1;
+		if(flagFrame){
 			HAL_DCMI_Suspend(&hdcmi);
 
-#if COLOR==0
+			//Proceso normal
 			//Convertir imagen a GRIS
 			for(uint32_t pos=0;pos < (IMG_COLUMNS * IMG_ROWS);pos++){
 				uint16_t pixel = frame_buffer[pos];
 				uint8_t r,g,b;
+
 				// Formato RGB555
 				b = pixel & 0x1f;
 				g = (pixel >> 5) & 0x1f;
 				r = (pixel >> 10) & 0x1f;
-				gray_frame[pos] = (b+g+r) / 3;
+				img1[pos] = (b+g+r) / 3;
 			}
-			printf("IMG a GRIS\r\n");
-#endif
-			printf("Enviar IMG por TCP\r\n");
-			enviarIMG();
+			//Primera Imagen
+			if(primero){
+				primero = 0;
+				copy(img1, img2);
+			}
+
+			diferencia(img1, img2, 10);
+
+			int cont_blancos = conteo(img2);
+
+			if(cont_blancos > cteMovimiento){
+				// "CON MOVIMIENTO"
+				printf("Con movimiento!\r\n");
+
+				binarizar(img2, 10);
+
+				erosion(img2);
+				erosion(img2);
+				erosion(img2);
+				erosion(img2);
+				erosion(img2);
+
+				bound_rectangulo(img2, 255, rectangulos);
+
+
+				estado = 0;
+				direccion = 0;
+
+				// Dibujar rectangulos contenedores de objetos
+				uint16_t x1=0,x2=0;
+				x1 = rectangulos[0];
+				//y1 = rectangulos[ind_rect + 1];
+				x2 = rectangulos[0 + 2];
+				//y2 = rectangulos[ind_rect + 3];
+
+				if((x1 < linea1) && (x2 > linea1)){
+					estado |= (1 << 0);
+					printf("LINEA UP\r\n");
+					//cout << "LINEA UP: " << (int)estado << " - " << (int)estado_ant << endl;
+				}
+
+				if((x1 < linea2) && (x2 > linea2)){
+					estado |= (1 << 1);
+					printf("LINEA DW\r\n");
+					//cout << "LINEA DW: " << (int)estado << " - " << (int)estado_ant << endl;
+				}
+
+
+				if(estado != estado_ant){
+					estados[ind_estado] = estado;
+
+
+					if(estado == 0 && ind_estado > 0){
+						//cout << "Procesar: " << (int)estado << "|";
+						//for(uint8_t i=0; i < 20; i++) cout << (int)estados[i];
+						//cout << endl;
+
+						for(uint8_t i=1; i < 20; i++){
+							if(estados[i-1]==2 && estados[i]==0){
+								if(estados[0]==1 || estados[0]==3)
+									direccion = 1;
+							}
+							else if(estados[i-1]==1 && estados[i]==0){
+								if(estados[0]==2 || estados[0]==3)
+									direccion = 2;
+							}
+							else if(estados[i-1]==3 && estados[i]==0){
+								if(estados[0]==1)
+									direccion = 1;
+								else if(estados[0]==2)
+									direccion = 2;
+							}
+						}
+
+						if(direccion == 1){
+							printf("ENTRANDO!\r\n");
+							numero++;
+							if (numero > 99)
+								numero = 99;
+						}
+						else if(direccion == 2){
+							printf("SALIENDO!\r\n");
+							numero--;
+							if(numero < 0) numero = 0;
+						}
+
+
+						for(uint8_t i=0; i < 20; i++) estados[i]=0;
+						ind_estado = 0;
+					}
+					else{
+						ind_estado++;
+					}
+
+					estado_ant = estado;
+				}
+			}
+
+
+
+//			// Enviar por TCP la Imagen
+//			if (flagTCP) {
+//				flagTCP = 0;
+//
+//				// Suspende captura de la camara
+//				flagEnviando = 1;
+//
+//				printf("Enviar IMG por TCP\r\n");
+//				copy(img2, img3);
+//				enviarIMG();
+//			}
+
+			// Copiar imagen actual a anterior
+			copy(img1, img2);
+
+			flagFrame = 0;
+			flagEnviando = 0;
 		}
+
+
 
 		if (!flagEnviando
 				&& HAL_DCMI_GetState(&hdcmi) == HAL_DCMI_STATE_SUSPENDED) {
-			printf("Reanudar Captura Camara\r\n");
+			//printf("Reanudar Captura Camara\r\n");
 			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
 			HAL_DCMI_Resume(&hdcmi);
 		}
@@ -473,6 +609,7 @@ int main(void)
 		 HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
 		 }
 		 */
+
 
 	}
   /* USER CODE END 3 */
@@ -739,7 +876,7 @@ static void MX_USART3_UART_Init(void)
 
   /* USER CODE END USART3_Init 1 */
   huart3.Instance = USART3;
-  huart3.Init.BaudRate = 115200;
+  huart3.Init.BaudRate = 9600;
   huart3.Init.WordLength = UART_WORDLENGTH_8B;
   huart3.Init.StopBits = UART_STOPBITS_1;
   huart3.Init.Parity = UART_PARITY_NONE;

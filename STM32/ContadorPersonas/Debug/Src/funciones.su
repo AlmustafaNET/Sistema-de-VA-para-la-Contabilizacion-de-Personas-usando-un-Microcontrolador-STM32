@@ -8,4 +8,4 @@ funciones.c:113:6:apertura	8	static
 funciones.c:119:6:cierre	8	static
 funciones.c:126:6:vecinos	56	static
 funciones.c:142:6:bound_rectangulo	20	static
-funciones.c:162:6:filtrar_x_area	64	static
+funciones.c:163:6:filtrar_x_area	64	static
